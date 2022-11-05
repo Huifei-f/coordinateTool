@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author yk
  * @version 1.0
- * @apiNote:
+ * @apiNote:    路径对象
  * @date 2021/9/20 17:46
  */
 public class Point2PointPath {
