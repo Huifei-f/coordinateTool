@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * @author yk
  * @version 1.0
- * @apiNote:
+ * @apiNote:表头节点构建issNew1
  * @date 2021/9/17 22:32
  */
 public class PointAndVertexDealJob {
