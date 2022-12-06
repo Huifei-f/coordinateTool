@@ -2,6 +2,7 @@ package com.tool.coordinate.support;
 
 import com.tool.coordinate.entity.Enum.MatrixColumn;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -21,8 +22,9 @@ public class MatrixMath {
      * @param arr -- 要计算的矩阵
      * @return
      */
-    public long determinant2D(Long[][] arr)
+    public <T> T determinant2D(T[][] arr)
     {
+        Object o = arr[0][0];
         int row = arr.length;
         if (row > 0)
         {
@@ -31,7 +33,41 @@ public class MatrixMath {
             {
                 throw new RuntimeException("这不是一个正方形矩阵！");
             }
-            return (long)((arr[1][1] * arr[0][0]) - (arr[0][1] * arr[1][0]));
+            BigDecimal bd_11 = new BigDecimal(arr[1][1] + "");
+            BigDecimal bd_00 = new BigDecimal(arr[0][0] + "");
+            BigDecimal bd_01 = new BigDecimal(arr[0][1] + "");
+            BigDecimal bd_10 = new BigDecimal(arr[1][0] + "");
+
+            /**
+             * 公式：((arr[1][1] * arr[0][0]) - (arr[0][1] * arr[1][0]))
+             */
+            BigDecimal result = bd_11.multiply(bd_00).subtract(bd_01.multiply(bd_10));
+            Object r = null;
+            if(o instanceof Double)
+            {
+                r = result.doubleValue();
+            }
+            else if(o instanceof Float)
+            {
+                r = result.floatValue();
+            }
+            else if(o instanceof Long)
+            {
+                r = result.longValue();
+            }
+            else if(o instanceof Short)
+            {
+                r = result.shortValue();
+            }
+            else if(o instanceof Integer)
+            {
+                r = result.intValue();
+            }
+            else
+            {
+                throw new RuntimeException("矩阵的类型不可计算!");
+            }
+            return (T)r;
         }
         else
         {
@@ -144,14 +180,14 @@ public class MatrixMath {
      * @param columnNo  --  起始列
      * @return
      */
-    public List<List<Long>> getCovalentFormulaMatrix(Long[][] arr, int rowNo, int columnNo)
+    public <T> List<List<T>> getCovalentFormulaMatrix(T[][] arr, int rowNo, int columnNo)
     {
-        List<List<Long>> r = new ArrayList<List<Long>>();
+        List<List<T>> r = new ArrayList<List<T>>();
         for (int iCyc = 0, len = arr.length; iCyc < len; iCyc++)
         {
             if (rowNo != iCyc)
             {
-                List<Long> bigDecimals = new ArrayList<Long>();
+                List<T> bigDecimals = new ArrayList<T>();
                 for (int lCyc = 0, mlen = arr[0].length; lCyc < mlen; lCyc++)
                 {
                     if (lCyc != columnNo)
@@ -299,39 +335,27 @@ public class MatrixMath {
     /**
      * @apiNote 矩阵的转置
      * @author yk
-     * @date 2022/1/30 14:32
+     * @date 2022/12/6 14:32
      * @param arr
      * @return
      */
-    public Long[][] getMatrixTranspose(Long[][] arr)
+    public <T> T[][] getMatrixTranspose(T[][] arr)
     {
-        Long[][] r = new Long[arr[0].length][arr.length];
+        Object obj = Array.newInstance(arr.getClass().getComponentType(), arr[0].length);
+        for(int iCyc=0,len=arr[0].length; iCyc<len; iCyc++)
+        {
+            Object temp = Array.newInstance(arr[0].getClass().getComponentType(), arr.length);
+            Array.set(obj, iCyc, temp);
+        }
+        T[][] copy = (T[][])obj;
         for(int iCyc=0,len=arr.length; iCyc<len; iCyc++)
         {
             for(int lCyc=0,mlen=arr[0].length; lCyc<mlen; lCyc++)
             {
-                r[lCyc][iCyc] = arr[iCyc][lCyc];
+                copy[lCyc][iCyc] = arr[iCyc][lCyc];
             }
         }
-        return r;
-    }
-
-    /**
-     * 集合转数组
-     * @param list
-     * @return
-     */
-    public Long[][] formatList2Array(List<List<Long>> list)
-    {
-        Long[][] bigr = new Long[list.size()][];
-
-        for (int iCyc = 0, len = list.size(); iCyc < len; iCyc++)
-        {
-            List<Long> pColumnArr = list.get(iCyc);
-            Long[] bigDecimals = pColumnArr.toArray(new Long[]{});
-            bigr[iCyc] = bigDecimals;
-        }
-        return bigr;
+        return copy;
     }
 
     /**
@@ -342,25 +366,53 @@ public class MatrixMath {
      * @param matrix2
      * @return
      */
-    public Long[][] multipMatrixSingleColumn(Long[][] matrix1, Long[][] matrix2)
+    public <T> T[] multipMatrixSingleColumn(T[][] matrix1, T[] matrix2)
     {
-        if (matrix1.length != matrix2.length)
+        Object o = matrix1[0][0];
+        if (matrix1[0].length != matrix2.length)
         {
             throw new RuntimeException("相乘的矩阵行数不相等!!!");
         }
-        Long[][] temp = new Long[matrix2.length][matrix2[0].length];
+        T[] temp = (T[])Array.newInstance(matrix2.getClass().getComponentType(), matrix1.length);
         for (int iCyc = 0, len = matrix1.length; iCyc < len; iCyc++)
         {
-            Long[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
-            Long cTemp = 0L;
+            T[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
+            BigDecimal cTemp = new BigDecimal("0");
             for (int jCyc = 0, nLen = pRowArr.length; jCyc < nLen; jCyc++)
             {
-                Long row = pRowArr[jCyc];
-//                Long[] pColumnArr = getRowOrColumn(matrix2, jCyc, MatrixColumn.COLUMN);
-                Long column = matrix2[jCyc][0];
-                cTemp = cTemp + (row * column);
+                T row = pRowArr[jCyc];
+//              T[] pColumnArr = getRowOrColumn(matrix2, jCyc, MatrixColumn.COLUMN);
+                T column = matrix2[jCyc];
+
+                BigDecimal bdRow = new BigDecimal(row+"");
+                BigDecimal bdColumn = new BigDecimal(column+"");
+
+                cTemp = cTemp.add(bdRow.multiply(bdColumn));
             }
-            temp[iCyc][0] = cTemp;
+            if(o instanceof Double)
+            {
+                Array.set(temp, iCyc, cTemp.doubleValue());
+            }
+            else if(o instanceof Float)
+            {
+                Array.set(temp, iCyc, cTemp.floatValue());
+            }
+            else if(o instanceof Long)
+            {
+                Array.set(temp, iCyc, cTemp.longValue());
+            }
+            else if(o instanceof Short)
+            {
+                Array.set(temp, iCyc, cTemp.shortValue());
+            }
+            else if(o instanceof Integer)
+            {
+                Array.set(temp, iCyc, cTemp.intValue());
+            }
+            else
+            {
+                throw new RuntimeException("矩阵的类型不可计算!");
+            }
         }
         return temp;
     }
@@ -373,27 +425,55 @@ public class MatrixMath {
      * @param matrix2
      * @return
      */
-    public Long[][] multipMatrixSpecsEqual(Long[][] matrix1, Long[][] matrix2)
+    public <T> T[][] multipMatrixSpecsEqual(T[][] matrix1, T[][] matrix2)
     {
+        Object o = matrix1[0][0];
         if (matrix1.length != matrix2.length)
         {
             throw new RuntimeException("相乘的矩阵行列数需要一致!!!");
         }
-        Long[][] temp = new Long[matrix1.length][matrix1.length];
+        T[][] temp = (T[][])deepCopyArrayInternal(matrix1);
         for (int iCyc = 0, len = matrix1.length; iCyc < len; iCyc++)
         {
-            Long[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
+            T[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
             for (int lCyc = 0, mLen = matrix2[0].length; lCyc < mLen; lCyc++)
             {
-                Long[] pColumnArr = getRowOrColumn(matrix2, lCyc, MatrixColumn.COLUMN);
-                Long cTemp = 0L;
+                T[] pColumnArr = getRowOrColumn(matrix2, lCyc, MatrixColumn.COLUMN);
+                BigDecimal cTemp = new BigDecimal("0");
                 for (int jCyc = 0, nLen = pRowArr.length; jCyc < nLen; jCyc++)
                 {
-                    Long row = pRowArr[jCyc];
-                    Long column = pColumnArr[jCyc];
-                    cTemp = cTemp + (row * column);
+                    T row = pRowArr[jCyc];
+                    T column = pColumnArr[jCyc];
+
+                    BigDecimal bdRow = new BigDecimal(row+"");
+                    BigDecimal bdColumn = new BigDecimal(column+"");
+
+                    cTemp = cTemp.add(bdRow.multiply(bdColumn));
                 }
-                temp[iCyc][lCyc] = cTemp;
+                if(o instanceof Double)
+                {
+                    Array.set(temp[iCyc], lCyc, cTemp.doubleValue());
+                }
+                else if(o instanceof Float)
+                {
+                    Array.set(temp[iCyc], lCyc, cTemp.floatValue());
+                }
+                else if(o instanceof Long)
+                {
+                    Array.set(temp[iCyc], lCyc, cTemp.longValue());
+                }
+                else if(o instanceof Short)
+                {
+                    Array.set(temp[iCyc], lCyc, cTemp.shortValue());
+                }
+                else if(o instanceof Integer)
+                {
+                    Array.set(temp[iCyc], lCyc, cTemp.intValue());
+                }
+                else
+                {
+                    throw new RuntimeException("矩阵的类型不可计算!");
+                }
             }
         }
         return temp;
@@ -413,11 +493,52 @@ public class MatrixMath {
         {
             for (Object pColumn : pRow)
             {
-                System.out.print(pColumn.toString() + "\t\t\t");
+                BigDecimal temp = new BigDecimal(pColumn.toString());
+                System.out.print(temp.toString() + "\t\t\t");
             }
             System.out.println("\n");
         }
         System.out.println("==============================");
+    }
+
+    /**
+     * @apiNote   打印矩阵
+     * @author yk
+     * @date 2021/9/20 19:37
+     * @param list
+     * @return
+     */
+    public static <T> void printMatrixForList(List<List<T>> list)
+    {
+        System.out.println("==============================");
+        for (List<T> pRow : list)
+        {
+            for (Object pColumn : pRow)
+            {
+                BigDecimal temp = new BigDecimal(pColumn.toString());
+                System.out.print(temp.toString() + "\t\t\t");
+            }
+            System.out.println("\n");
+        }
+        System.out.println("==============================");
+    }
+
+    /**
+     * 集合转数组
+     * @param list
+     * @return
+     */
+    private Long[][] formatList2Array(List<List<Long>> list)
+    {
+        Long[][] bigr = new Long[list.size()][];
+
+        for (int iCyc = 0, len = list.size(); iCyc < len; iCyc++)
+        {
+            List<Long> pColumnArr = list.get(iCyc);
+            Long[] bigDecimals = pColumnArr.toArray(new Long[]{});
+            bigr[iCyc] = bigDecimals;
+        }
+        return bigr;
     }
 
     /**
@@ -429,17 +550,18 @@ public class MatrixMath {
      * @param pDir  --  行或者列
      * @return
      */
-    private Long[] getRowOrColumn(Long[][] arr, int num, MatrixColumn pDir)
+    private <T> T[] getRowOrColumn(T[][] arr, int num, MatrixColumn pDir)
     {
         if (pDir.equals(MatrixColumn.COLUMN))
         {
-            List<Long> temp = new ArrayList<Long>();
+            List<T> temp = new ArrayList<T>();
             for (int iCyc = 0, len = arr.length; iCyc < len; iCyc++)
             {
                 temp.add(arr[iCyc][num]);
             }
 
-            return temp.toArray(new Long[temp.size()]);
+            T[] o = (T[])Array.newInstance(arr[0].getClass().getComponentType(), arr[0].length);
+            return temp.toArray(o);
         }
         else if (pDir.equals(MatrixColumn.ROW))
         {
@@ -447,7 +569,7 @@ public class MatrixMath {
         }
         else
         {
-            return new Long[] { };
+            throw new RuntimeException("请指定行列[pDir]属性值!");
         }
     }
 
@@ -458,7 +580,7 @@ public class MatrixMath {
      * @param
      * @return
      */
-    private boolean checkSquareMatrix(Long[][] arr)
+    private <T> boolean checkSquareMatrix(T[][] arr)
     {
         int row = arr.length;
         if (row > 0)
@@ -470,5 +592,24 @@ public class MatrixMath {
             }
         }
         return true;
+    }
+
+    /**
+     * @apiNote  复制多维数组
+     * @date 2022/12/6 16:12
+     * @param array
+     * @return
+     */
+    private Object deepCopyArrayInternal(Object array)
+    {
+        int length = Array.getLength(array);
+        Object copy = Array.newInstance(array.getClass().getComponentType(), length);
+        for (int i = 0; i < length; i++) {
+            Object value = Array.get(array, i);
+            if (value != null && value.getClass().isArray())
+                value = deepCopyArrayInternal(value);
+            Array.set(copy, i, value);
+        }
+        return copy;
     }
 }
