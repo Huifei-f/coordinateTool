@@ -1,6 +1,7 @@
 package com.tool.coordinate.support;
 
 import com.tool.coordinate.entity.Enum.MatrixColumn;
+import com.tool.coordinate.tool.PrintTool;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -505,17 +506,22 @@ public class MatrixMath {
      */
     public static void printMatrix(Object[][] arr)
     {
-        System.out.println("==============================");
-        for (Object[] pRow : arr)
+        int length = arr[0].length;
+        String[] pHead = new String[length];
+        for(int iCyc=0; iCyc<length; iCyc++)
         {
-            for (Object pColumn : pRow)
-            {
-                BigDecimal temp = new BigDecimal(pColumn.toString());
-                System.out.print(temp.toString() + "\t\t");
-            }
-            System.out.println("\n");
+            pHead[iCyc] = "["+iCyc+"]";
         }
-        System.out.println("==============================");
+        String[][] pData = new String[arr.length][arr[0].length];
+        for(int iCyc=0,len=arr.length; iCyc<len; iCyc++)
+        {
+            for(int lCyc=0,mlen=arr[0].length; lCyc<mlen; lCyc++)
+            {
+                BigDecimal temp = new BigDecimal(arr[iCyc][lCyc]+"");
+                pData[iCyc][lCyc] = temp.toString();
+            }
+        }
+        PrintTool.printTable(pHead, pData);
     }
 
     /**
@@ -527,17 +533,8 @@ public class MatrixMath {
      */
     public static <T> void printMatrixForList(List<List<T>> list)
     {
-        System.out.println("==============================");
-        for (List<T> pRow : list)
-        {
-            for (Object pColumn : pRow)
-            {
-                BigDecimal temp = new BigDecimal(pColumn.toString());
-                System.out.print(temp.toString() + "\t\t\t");
-            }
-            System.out.println("\n");
-        }
-        System.out.println("==============================");
+        String[][] pData = list.toArray(new String[][]{});
+        PrintTool.printTable(new String[]{ "[1]" , "[2]", "[3]" }, pData);
     }
 
     /**
