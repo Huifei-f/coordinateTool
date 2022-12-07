@@ -22,7 +22,7 @@ public class MatrixMath {
      * @param arr -- 要计算的矩阵
      * @return
      */
-    public <T> T determinant2D(T[][] arr)
+    public <T> Double determinant2D(T[][] arr)
     {
         Object o = arr[0][0];
         int row = arr.length;
@@ -42,32 +42,32 @@ public class MatrixMath {
              * 公式：((arr[1][1] * arr[0][0]) - (arr[0][1] * arr[1][0]))
              */
             BigDecimal result = bd_11.multiply(bd_00).subtract(bd_01.multiply(bd_10));
-            Object r = null;
+            BigDecimal r = new BigDecimal("1");
             if(o instanceof Double)
             {
-                r = result.doubleValue();
+                r = new BigDecimal(result.doubleValue());
             }
             else if(o instanceof Float)
             {
-                r = result.floatValue();
+                r = new BigDecimal(result.floatValue());
             }
             else if(o instanceof Long)
             {
-                r = result.longValue();
+                r = new BigDecimal(result.longValue());
             }
             else if(o instanceof Short)
             {
-                r = result.shortValue();
+                r = new BigDecimal(result.shortValue());
             }
             else if(o instanceof Integer)
             {
-                r = result.intValue();
+                r = new BigDecimal(result.intValue());
             }
             else
             {
                 throw new RuntimeException("矩阵的类型不可计算!");
             }
-            return (T)r;
+            return r.doubleValue();
         }
         else
         {
@@ -85,7 +85,7 @@ public class MatrixMath {
      * @param count     --  行列式的值
      * @return
      */
-    public long determinant3D(Long[][] arr, int rowNo, int columnNo, long count)
+    public <T> Double determinant3D(T[][] arr, int rowNo, int columnNo, BigDecimal count)
     {
         int row = arr.length;
         if (row > 0)
@@ -95,22 +95,24 @@ public class MatrixMath {
             {
                 throw new RuntimeException("这不是一个正方形矩阵！");
             }
-            List<List<Long>> covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
-            if (covalentFormulaMatrix.size() == 2)
+            T[][] covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
+            if (covalentFormulaMatrix.length == 2)
             {
+                BigDecimal pDeterminant2D = new BigDecimal(this.determinant2D(covalentFormulaMatrix));
+                BigDecimal pValue = new BigDecimal(arr[rowNo][columnNo] + "");
                 if ((rowNo + columnNo) % 2 == 0)
                 {
-                    count = (count + (this.determinant2D(this.formatList2Array(covalentFormulaMatrix)) * arr[rowNo][columnNo]));
+                    count = count.add(pDeterminant2D.multiply(pValue));
                 }
                 else
                 {
-                    count = (count + (this.determinant2D(this.formatList2Array(covalentFormulaMatrix)) * arr[rowNo][columnNo] * -1));
+                    count = count.add(pDeterminant2D.multiply(pValue).multiply(new BigDecimal("-1")));
                 }
                 columnNo++;
             }
             if (columnNo >= column)
             {
-                return count;
+                return count.doubleValue();
             }
             else
             {
@@ -133,7 +135,7 @@ public class MatrixMath {
      * @param count
      * @return
      */
-    public long determinant4D(Long[][] arr, int rowNo, int columnNo, long count)
+    public <T> Double determinant4D(T[][] arr, int rowNo, int columnNo, BigDecimal count)
     {
         int row = arr.length;
         if (row > 0)
@@ -143,22 +145,24 @@ public class MatrixMath {
             {
                 throw new RuntimeException("这不是一个正方形矩阵！");
             }
-            List<List<Long>> covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
-            if (covalentFormulaMatrix.size() == 3)
+            T[][] covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
+            if (covalentFormulaMatrix.length == 3)
             {
+                BigDecimal pDeterminant3D = new BigDecimal(this.determinant3D(covalentFormulaMatrix, 0, 0, new BigDecimal("0")));
+                BigDecimal pValue = new BigDecimal(arr[rowNo][columnNo] + "");
                 if ((rowNo + columnNo) % 2 == 0)
                 {
-                    count = (count + (this.determinant3D(this.formatList2Array(covalentFormulaMatrix), 0, 0, 0) * arr[rowNo][columnNo]));
+                    count = count.add(pDeterminant3D.multiply(pValue));
                 }
                 else
                 {
-                    count = (count + (this.determinant3D(this.formatList2Array(covalentFormulaMatrix), 0, 0, 0) * arr[rowNo][columnNo] * -1));
+                    count = count.add(pDeterminant3D.multiply(pValue).multiply(new BigDecimal("-1")));
                 }
                 columnNo++;
             }
             if (columnNo >= column)
             {
-                return count;
+                return count.doubleValue();
             }
             else
             {
@@ -172,6 +176,19 @@ public class MatrixMath {
     }
 
     /**
+     * @apiNote 计算矩阵的行列式
+     * @param arr
+     * @param <T>
+     * @return
+     */
+    public <T> Double mathDeterminant(T[][] arr)
+    {
+        MathMatrixDeterminant mathMatrixDeterminant = new MathMatrixDeterminant(arr);
+        Double v = mathMatrixDeterminant.matrixDeterminant();
+        return v;
+    }
+
+    /**
      * @apiNote   求矩阵的余子式
      * @author yk
      * @date 2021/4/15 18:34
@@ -180,25 +197,30 @@ public class MatrixMath {
      * @param columnNo  --  起始列
      * @return
      */
-    public <T> List<List<T>> getCovalentFormulaMatrix(T[][] arr, int rowNo, int columnNo)
+    public <T> T[][] getCovalentFormulaMatrix(T[][] arr, int rowNo, int columnNo)
     {
-        List<List<T>> r = new ArrayList<List<T>>();
+        int l = arr.length - 1;
+        Object obj = Array.newInstance(arr.getClass().getComponentType(), l);
+        for(int iCyc = 0; iCyc<l; iCyc++)
+        {
+            Object temp = Array.newInstance(arr[0].getClass().getComponentType(), arr[0].length-1);
+            Array.set(obj, iCyc, temp);
+        }
+        T[][] tl = (T[][]) obj;
         for (int iCyc = 0, len = arr.length; iCyc < len; iCyc++)
         {
             if (rowNo != iCyc)
             {
-                List<T> bigDecimals = new ArrayList<T>();
                 for (int lCyc = 0, mlen = arr[0].length; lCyc < mlen; lCyc++)
                 {
                     if (lCyc != columnNo)
                     {
-                        bigDecimals.add(arr[iCyc][lCyc]);
+                        tl[rowNo<=iCyc?iCyc-1:iCyc][columnNo<=lCyc?lCyc-1:lCyc] = arr[iCyc][lCyc];
                     }
                 }
-                r.add(bigDecimals);
             }
         }
-        return r;
+        return tl;
     }
 
     /**
@@ -210,29 +232,29 @@ public class MatrixMath {
      * @param columnNo  --  起始列
      * @return
      */
-    public long getAlgebraCovalentFormula3DMatrix(Long[][] arr, int rowNo, int columnNo)
+    public <T> Double getAlgebraCovalentFormula3DMatrix(T[][] arr, int rowNo, int columnNo)
     {
-        List<List<Long>> covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
-        Long[][] bigDecimals = this.formatList2Array(covalentFormulaMatrix);
-        long bigDecimal = this.determinant2D(bigDecimals);
+        T[][] covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
+        Double d = mathDeterminant(covalentFormulaMatrix);
+        BigDecimal bigDecimal = new BigDecimal(d);
         if ((rowNo + columnNo) % 2 == 0)
         {
-            return bigDecimal;
+            return bigDecimal.doubleValue();
         }
         else
         {
-            return bigDecimal * -1;
+            return bigDecimal.multiply(new BigDecimal("-1")).doubleValue();
         }
     }
 
     /**
-     * @apiNote   计算一个[3x3]矩阵的逆矩阵
+     * @apiNote   计算一个[3x3]矩阵以下的逆矩阵
      * @author yk
      * @date 2022/1/30 11:05
      * @param arr
      * @return
      */
-    public Double[][] getInverse3DMatrix(Long[][] arr)
+    public <T> Double[][] getInverse3DMatrix(T[][] arr)
     {
         if(!checkSquareMatrix(arr))
         {
@@ -243,39 +265,34 @@ public class MatrixMath {
         {
             throw new RuntimeException("该方法只可以计算[3x3]以下的矩阵！");
         }
+        Double l = mathDeterminant(arr);
+        if(l==0)
+        {
+            throw new RuntimeException("由于该矩阵行列式为0，不存在逆矩阵！");
+        }
         if(row==2)
         {
-            long l = determinant2D(arr);
-            if(l==0)
-            {
-                throw new RuntimeException("由于该矩阵行列式为0，不存在逆矩阵！");
-            }
             Double[][] temp = new Double[2][2];
-            temp[0][0] = new BigDecimal(arr[1][1])
+            temp[0][0] = new BigDecimal(arr[1][1]+"")
                     .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[0][1] = new BigDecimal(arr[0][1])
+            temp[0][1] = new BigDecimal(arr[0][1]+"")
                     .multiply(new BigDecimal(-1))
                     .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[1][0] = new BigDecimal(arr[1][0])
+            temp[1][0] = new BigDecimal(arr[1][0]+"")
                     .multiply(new BigDecimal(-1))
                     .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[1][1] = new BigDecimal(arr[0][0])
+            temp[1][1] = new BigDecimal(arr[0][0]+"")
                     .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
                     .doubleValue();
             return temp;
         }
         else
         {
-            long l = determinant3D(arr, 0, 0, 0);
-            if(l==0)
-            {
-                throw new RuntimeException("由于该矩阵行列式为0，不存在逆矩阵！");
-            }
-            Long[][] acfMatrix = getAlgebraCovalentFormulaMatrix(arr);
-            Long[][] matrixTranspose = getMatrixTranspose(acfMatrix);
+            Double[][] acfMatrix = getAlgebraCovalentFormulaMatrix(arr);
+            Double[][] matrixTranspose = getMatrixTranspose(acfMatrix);
             Double[][] temp = new Double[3][3];
             temp[0][0] = new BigDecimal(matrixTranspose[0][0])
                     .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
@@ -315,13 +332,13 @@ public class MatrixMath {
      * @param arr
      * @return
      */
-    public Long[][] getAlgebraCovalentFormulaMatrix(Long[][] arr)
+    public <T> Double[][] getAlgebraCovalentFormulaMatrix(T[][] arr)
     {
         if(!checkSquareMatrix(arr))
         {
             throw new RuntimeException("这不是一个正方形矩阵！");
         }
-        Long[][] r = new Long[arr.length][arr.length];
+        Double[][] r = new Double[arr.length][arr.length];
         for(int iCyc=0,len=arr.length; iCyc<len; iCyc++)
         {
             for(int lCyc=0,mlen=arr.length; lCyc<mlen; lCyc++)
@@ -494,7 +511,7 @@ public class MatrixMath {
             for (Object pColumn : pRow)
             {
                 BigDecimal temp = new BigDecimal(pColumn.toString());
-                System.out.print(temp.toString() + "\t\t\t");
+                System.out.print(temp.toString() + "\t\t");
             }
             System.out.println("\n");
         }
@@ -611,5 +628,127 @@ public class MatrixMath {
             Array.set(copy, i, value);
         }
         return copy;
+    }
+
+    class MathMatrixDeterminant<T>
+    {
+
+        private T[][] t;
+
+        public MathMatrixDeterminant(){}
+
+        public MathMatrixDeterminant(T[][] t)
+        {
+            this.t = t;
+        }
+
+        /**
+         * @apiNote 计算矩阵的行列式
+         * @return
+         */
+        public Double matrixDeterminant()
+        {
+            T[][] t = this.t;
+            int length = t.length;
+
+            int[] ints = this.GetArray(length);
+            //  获取数组的全排列
+            List<List<Integer>> pFullList = this.FullArrangement(ints, new ArrayList<Integer>(), new ArrayList<List<Integer>>());
+            //  行列式的值
+            BigDecimal v = new BigDecimal("0");
+            for(int iCyc=0,len=pFullList.size(); iCyc<len; iCyc++)
+            {
+                //  单项的和
+                BigDecimal pMonomialTotal = new BigDecimal("1");
+
+                List<Integer> pOrderList = pFullList.get(iCyc);
+                Integer[] tempArr = pOrderList.toArray(new Integer[]{});
+                //  计算逆序数
+                int i = this.mathReverseOrderNumber(tempArr);
+                if(i%2!=0)
+                {
+                    pMonomialTotal = pMonomialTotal.multiply(new BigDecimal("-1"));
+                }
+
+                for (int lCyc=0,mLen=pOrderList.size(); lCyc<mLen; lCyc++)
+                {
+                    Integer index = pOrderList.get(lCyc);
+
+                    T t1 = t[lCyc][index];
+                    pMonomialTotal = pMonomialTotal.multiply(new BigDecimal(t1 + ""));
+                }
+
+                v = v.add(pMonomialTotal);
+            }
+            return v.doubleValue();
+        }
+
+        /**
+         * @apiNote 计算逆序数
+         * @param arr
+         * @return
+         */
+        private int mathReverseOrderNumber(Integer[] arr)
+        {
+            Integer count = 0;
+            Integer[] copyArr = Arrays.copyOf(arr, arr.length);
+            for (int iCyc = 1; iCyc < arr.length; iCyc++)
+            {
+                int tmp = arr[iCyc];
+                int jCyc = iCyc;
+                while (jCyc > 0 && tmp < arr[jCyc - 1]) {
+                    arr[jCyc] = arr[jCyc - 1];
+                    jCyc--;
+                    count++;
+                }
+
+                if (jCyc != iCyc) {
+                    arr[jCyc] = tmp;
+                }
+            }
+            return count;
+        }
+
+        /**
+         * @apiNote 数组的全排列
+         * @param arr--数组
+         * @param list--暂存集合
+         * @param result--结果集合
+         * @return
+         */
+        private List<List<Integer>> FullArrangement(int[] arr, List<Integer> list, List<List<Integer>> result)
+        {
+            List<Integer> temp = new ArrayList<>(list);
+            if (arr.length == list.size())
+            {
+                result.add(temp);
+            }
+            for (int iCyc=0; iCyc<arr.length; iCyc++)
+            {
+                if (temp.contains(arr[iCyc]))
+                {
+                    continue;
+                }
+                temp.add(arr[iCyc]);
+                FullArrangement(arr, temp, result);
+                temp.remove(temp.size()-1);
+            }
+            return result;
+        }
+
+        /**
+         * @apiNote 获取数组
+         * @param num
+         * @return
+         */
+        private int[] GetArray(int num)
+        {
+            int[] arr = new int[num];
+            for (int iCyc=0; iCyc<num; iCyc++)
+            {
+                arr[iCyc] = iCyc;
+            }
+            return arr;
+        }
     }
 }
