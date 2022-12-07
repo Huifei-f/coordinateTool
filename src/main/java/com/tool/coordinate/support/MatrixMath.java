@@ -391,7 +391,8 @@ public class MatrixMath {
         {
             throw new RuntimeException("相乘的矩阵行数不相等!!!");
         }
-        T[] temp = (T[])Array.newInstance(matrix2.getClass().getComponentType(), matrix1.length);
+        Number[] numbers = {};
+        T[] temp = (T[])Array.newInstance(numbers.getClass().getComponentType(), matrix1.length);
         for (int iCyc = 0, len = matrix1.length; iCyc < len; iCyc++)
         {
             T[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
@@ -399,7 +400,6 @@ public class MatrixMath {
             for (int jCyc = 0, nLen = pRowArr.length; jCyc < nLen; jCyc++)
             {
                 T row = pRowArr[jCyc];
-//              T[] pColumnArr = getRowOrColumn(matrix2, jCyc, MatrixColumn.COLUMN);
                 T column = matrix2[jCyc];
 
                 BigDecimal bdRow = new BigDecimal(row+"");
