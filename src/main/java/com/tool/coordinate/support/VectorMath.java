@@ -175,9 +175,12 @@ public class VectorMath {
         matrix3D[2] = new Long[] { bVector.getXInt(precision), bVector.getYInt(precision), bVector.getZInt(precision)};
 
         MatrixMath matrixMath = new MatrixMath();
-        long x = matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 0);
-        long y = matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 1);
-        long z = matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 2);
+        long x = new BigDecimal(matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 0)).longValue();
+                //matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 0);
+        long y = new BigDecimal(matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 1)).longValue();
+                //matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 1);
+        long z = new BigDecimal(matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 2)).longValue();
+                //matrixMath.getAlgebraCovalentFormula3DMatrix(matrix3D, 0, 2);
         point.setX(new BigDecimal(x).divide(new BigDecimal(Math.pow(precision, 2))).longValue());
         point.setY(new BigDecimal(y).divide(new BigDecimal(Math.pow(precision, 2))).longValue());
         point.setZ(new BigDecimal(z).divide(new BigDecimal(Math.pow(precision, 2))).longValue());
