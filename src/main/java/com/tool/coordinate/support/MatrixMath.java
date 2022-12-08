@@ -384,15 +384,14 @@ public class MatrixMath {
      * @param matrix2
      * @return
      */
-    public <T> T[] multipMatrixSingleColumn(T[][] matrix1, T[] matrix2)
+    public <T> Double[] multipMatrixSingleColumn(T[][] matrix1, T[] matrix2)
     {
-        Object o = matrix1[0][0];
         if (matrix1[0].length != matrix2.length)
         {
             throw new RuntimeException("相乘的矩阵行数不相等!!!");
         }
-        Number[] numbers = {};
-        T[] temp = (T[])Array.newInstance(numbers.getClass().getComponentType(), matrix1.length);
+        Double[] numbers = {};
+        Double[] temp = (Double[])Array.newInstance(numbers.getClass().getComponentType(), matrix1.length);
         for (int iCyc = 0, len = matrix1.length; iCyc < len; iCyc++)
         {
             T[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
@@ -407,30 +406,7 @@ public class MatrixMath {
 
                 cTemp = cTemp.add(bdRow.multiply(bdColumn));
             }
-            if(o instanceof Double)
-            {
-                Array.set(temp, iCyc, cTemp.doubleValue());
-            }
-            else if(o instanceof Float)
-            {
-                Array.set(temp, iCyc, cTemp.floatValue());
-            }
-            else if(o instanceof Long)
-            {
-                Array.set(temp, iCyc, cTemp.longValue());
-            }
-            else if(o instanceof Short)
-            {
-                Array.set(temp, iCyc, cTemp.shortValue());
-            }
-            else if(o instanceof Integer)
-            {
-                Array.set(temp, iCyc, cTemp.intValue());
-            }
-            else
-            {
-                throw new RuntimeException("矩阵的类型不可计算!");
-            }
+            Array.set(temp, iCyc, cTemp.doubleValue());
         }
         return temp;
     }
@@ -443,14 +419,20 @@ public class MatrixMath {
      * @param matrix2
      * @return
      */
-    public <T> T[][] multipMatrixSpecsEqual(T[][] matrix1, T[][] matrix2)
+    public <T> Double[][] multipMatrixSpecsEqual(T[][] matrix1, T[][] matrix2)
     {
-        Object o = matrix1[0][0];
         if (matrix1.length != matrix2.length)
         {
             throw new RuntimeException("相乘的矩阵行列数需要一致!!!");
         }
-        T[][] temp = (T[][])deepCopyArrayInternal(matrix1);
+        Double[][] numbers = {{}};
+        Object obj = Array.newInstance(numbers.getClass().getComponentType(), matrix1[0].length);
+        for(int iCyc=0,len=matrix1[0].length; iCyc<len; iCyc++)
+        {
+            Object temp = Array.newInstance(numbers[0].getClass().getComponentType(), matrix1.length);
+            Array.set(obj, iCyc, temp);
+        }
+        Double[][] temp = (Double[][])obj;
         for (int iCyc = 0, len = matrix1.length; iCyc < len; iCyc++)
         {
             T[] pRowArr = getRowOrColumn(matrix1, iCyc, MatrixColumn.ROW);
@@ -468,30 +450,7 @@ public class MatrixMath {
 
                     cTemp = cTemp.add(bdRow.multiply(bdColumn));
                 }
-                if(o instanceof Double)
-                {
-                    Array.set(temp[iCyc], lCyc, cTemp.doubleValue());
-                }
-                else if(o instanceof Float)
-                {
-                    Array.set(temp[iCyc], lCyc, cTemp.floatValue());
-                }
-                else if(o instanceof Long)
-                {
-                    Array.set(temp[iCyc], lCyc, cTemp.longValue());
-                }
-                else if(o instanceof Short)
-                {
-                    Array.set(temp[iCyc], lCyc, cTemp.shortValue());
-                }
-                else if(o instanceof Integer)
-                {
-                    Array.set(temp[iCyc], lCyc, cTemp.intValue());
-                }
-                else
-                {
-                    throw new RuntimeException("矩阵的类型不可计算!");
-                }
+                Array.set(temp[iCyc], lCyc, cTemp.doubleValue());
             }
         }
         return temp;
