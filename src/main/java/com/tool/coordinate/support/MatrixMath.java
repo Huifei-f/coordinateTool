@@ -25,7 +25,6 @@ public class MatrixMath {
      */
     public <T> Double determinant2D(T[][] arr)
     {
-        Object o = arr[0][0];
         int row = arr.length;
         if (row > 0)
         {
@@ -43,32 +42,7 @@ public class MatrixMath {
              * 公式：((arr[1][1] * arr[0][0]) - (arr[0][1] * arr[1][0]))
              */
             BigDecimal result = bd_11.multiply(bd_00).subtract(bd_01.multiply(bd_10));
-            BigDecimal r = new BigDecimal("1");
-            if(o instanceof Double)
-            {
-                r = new BigDecimal(result.doubleValue());
-            }
-            else if(o instanceof Float)
-            {
-                r = new BigDecimal(result.floatValue());
-            }
-            else if(o instanceof Long)
-            {
-                r = new BigDecimal(result.longValue());
-            }
-            else if(o instanceof Short)
-            {
-                r = new BigDecimal(result.shortValue());
-            }
-            else if(o instanceof Integer)
-            {
-                r = new BigDecimal(result.intValue());
-            }
-            else
-            {
-                throw new RuntimeException("矩阵的类型不可计算!");
-            }
-            return r.doubleValue();
+            return result.doubleValue();
         }
         else
         {
