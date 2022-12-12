@@ -223,7 +223,7 @@ public class MatrixMath {
     }
 
     /**
-     * @apiNote   计算一个[3x3]矩阵以下的逆矩阵
+     * @apiNote   计算一个方阵的逆矩阵
      * @author yk
      * @date 2022/1/30 11:05
      * @param arr
@@ -235,11 +235,12 @@ public class MatrixMath {
         {
             throw new RuntimeException("这不是一个正方形矩阵！");
         }
+        int scale = 6;
         int row = arr.length;
-        if(row>3)
+        /*if(row>3)
         {
             throw new RuntimeException("该方法只可以计算[3x3]以下的矩阵！");
-        }
+        }*/
         Double l = mathDeterminant(arr);
         if(l==0)
         {
@@ -249,18 +250,18 @@ public class MatrixMath {
         {
             Double[][] temp = new Double[2][2];
             temp[0][0] = new BigDecimal(arr[1][1]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), scale, RoundingMode.FLOOR)
                     .doubleValue();
             temp[0][1] = new BigDecimal(arr[0][1]+"")
                     .multiply(new BigDecimal(-1))
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), scale, RoundingMode.FLOOR)
                     .doubleValue();
             temp[1][0] = new BigDecimal(arr[1][0]+"")
                     .multiply(new BigDecimal(-1))
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), scale, RoundingMode.FLOOR)
                     .doubleValue();
             temp[1][1] = new BigDecimal(arr[0][0]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), scale, RoundingMode.FLOOR)
                     .doubleValue();
             return temp;
         }
@@ -268,40 +269,22 @@ public class MatrixMath {
         {
             Double[][] acfMatrix = getAlgebraCovalentFormulaMatrix(arr);
             Double[][] matrixTranspose = getMatrixTranspose(acfMatrix);
-            Double[][] temp = new Double[3][3];
-            temp[0][0] = new BigDecimal(matrixTranspose[0][0]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[0][1] = new BigDecimal(matrixTranspose[0][1]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[0][2] = new BigDecimal(matrixTranspose[0][2]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[1][0] = new BigDecimal(matrixTranspose[1][0]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[1][1] = new BigDecimal(matrixTranspose[1][1]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[1][2] = new BigDecimal(matrixTranspose[1][2]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[2][0] = new BigDecimal(matrixTranspose[2][0]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[2][1] = new BigDecimal(matrixTranspose[2][1]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
-            temp[2][2] = new BigDecimal(matrixTranspose[2][2]+"")
-                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
-                    .doubleValue();
+            Double[][] temp = new Double[arr.length][arr[0].length];
+            for(int iCyc=0; iCyc<arr.length; iCyc++)
+            {
+                for(int lCyc=0; lCyc<arr[0].length; lCyc++)
+                {
+                    temp[iCyc][lCyc] = new BigDecimal(matrixTranspose[iCyc][lCyc]+"")
+                            .divide(new BigDecimal(l+""), scale, RoundingMode.FLOOR)
+                            .doubleValue();
+                }
+            }
             return temp;
         }
     }
 
     /**
-     * @apiNote 获取[3x3]矩阵的代数余子式矩阵
+     * @apiNote 获取矩阵的代数余子式矩阵
      * @author yk
      * @date 2022/1/30 14:06
      * @param arr
@@ -439,12 +422,6 @@ public class MatrixMath {
      */
     public static void printMatrix(Object[][] arr)
     {
-        int length = arr[0].length;
-        String[] pHead = new String[length];
-        for(int iCyc=0; iCyc<length; iCyc++)
-        {
-            pHead[iCyc] = "["+iCyc+"]";
-        }
         String[][] pData = new String[arr.length][arr[0].length];
         for(int iCyc=0,len=arr.length; iCyc<len; iCyc++)
         {
@@ -454,7 +431,7 @@ public class MatrixMath {
                 pData[iCyc][lCyc] = temp.toString();
             }
         }
-        PrintTool.printTable(pHead, pData);
+        PrintTool.printTable(pData);
     }
 
     /**
@@ -467,7 +444,7 @@ public class MatrixMath {
     public static <T> void printMatrixForList(List<List<T>> list)
     {
         String[][] pData = list.toArray(new String[][]{});
-        PrintTool.printTable(new String[]{ "[1]" , "[2]", "[3]" }, pData);
+        PrintTool.printTable(pData);
     }
 
     /**

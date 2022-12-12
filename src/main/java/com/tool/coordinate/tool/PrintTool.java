@@ -11,7 +11,31 @@ public class PrintTool {
         printTable(heads, data);
     }*/
 
-    //按表格打印数据
+    /**
+     * @apiNote 按表格打印数据
+     * @param data
+     */
+    public static void printTable(String[][] data)
+    {
+        if (null == data || null == data[0] || data[0].length <= 0) {
+            throw new RuntimeException("数据data[][]不能为空!");
+        }
+        //数据列数
+        int rowNum = data[0].length;
+        //数据行数
+        int lineNum = data.length;
+        //每列数据宽度
+        Map<Integer, Integer> rowWidthMap = getRowWidthMap(rowNum, lineNum, data[0], data);
+        // 打印表头
+        printLine(rowNum, rowWidthMap);
+        //打印数据
+        printData(rowNum, lineNum, rowWidthMap, data);
+    }
+
+    /**
+     * @apiNote 按表格打印数据
+     * @param data
+     */
     public static void printTable(String[] heads, String[][] data)
     {
         if (null == heads || heads.length <= 0) {
@@ -39,7 +63,8 @@ public class PrintTool {
     }
 
     //获取列宽度-每列取最大
-    public static Map<Integer, Integer> getRowWidthMap(int rowNum, int lineNum, String[] heads, String[][] data) {
+    private static Map<Integer, Integer> getRowWidthMap(int rowNum, int lineNum, String[] heads, String[][] data)
+    {
         Map<Integer, Integer> rowWidthMap = new HashMap<>();
         //先记入表头各列宽度
         for (int i = 0; i < rowNum; i++) {
@@ -66,7 +91,8 @@ public class PrintTool {
     }
 
     //打印表格中的横线
-    public static void printLine(int rowNum, Map<Integer, Integer> map) {
+    private static void printLine(int rowNum, Map<Integer, Integer> map)
+    {
         for (int i = 0; i < rowNum; i++) {
             int len = map.get(i);
             System.out.print("+");
@@ -78,16 +104,18 @@ public class PrintTool {
         System.out.println();
     }
 
-    public static int length(String str) {
-
-        if ("".equals(str) || str==null) {
+    private static int length(String str)
+    {
+        if ("".equals(str) || str==null)
+        {
             return 0;
         }
         return str.length();
     }
 
     //打印表头内容
-    public static void printHead(int rowNum, Map<Integer, Integer> rowWidthMap, String[] heads) {
+    private static void printHead(int rowNum, Map<Integer, Integer> rowWidthMap, String[] heads)
+    {
         printLine(rowNum, rowWidthMap);
         for (int h = 0; h < rowNum; h++) {
             System.out.print("|");
@@ -103,7 +131,8 @@ public class PrintTool {
     }
 
     //打印表数据
-    public static void printData(int rowNum, int lineNum, Map<Integer, Integer> rowWidthMap, String[][] data) {
+    private static void printData(int rowNum, int lineNum, Map<Integer, Integer> rowWidthMap, String[][] data)
+    {
         for (int j = 0; j < lineNum; j++) {
             for (int i = 0; i < rowNum; i++) {
                 System.out.print("|");
@@ -122,7 +151,8 @@ public class PrintTool {
     }
 
     //执行打印数据
-    public static void executePrintData(int actLength, int dataLength, String data) {
+    private static void executePrintData(int actLength, int dataLength, String data)
+    {
         if (actLength > dataLength) {
             int num = actLength - dataLength;
             if (num == 1) {
