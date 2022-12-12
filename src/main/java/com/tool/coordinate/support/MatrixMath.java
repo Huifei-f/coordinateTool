@@ -73,7 +73,7 @@ public class MatrixMath {
             T[][] covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
             if (covalentFormulaMatrix.length == 2)
             {
-                BigDecimal pDeterminant2D = new BigDecimal(this.determinant2D(covalentFormulaMatrix));
+                BigDecimal pDeterminant2D = new BigDecimal(this.determinant2D(covalentFormulaMatrix)+"");
                 BigDecimal pValue = new BigDecimal(arr[rowNo][columnNo] + "");
                 if ((rowNo + columnNo) % 2 == 0)
                 {
@@ -123,7 +123,7 @@ public class MatrixMath {
             T[][] covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
             if (covalentFormulaMatrix.length == 3)
             {
-                BigDecimal pDeterminant3D = new BigDecimal(this.determinant3D(covalentFormulaMatrix, 0, 0, new BigDecimal("0")));
+                BigDecimal pDeterminant3D = new BigDecimal(this.determinant3D(covalentFormulaMatrix, 0, 0, new BigDecimal("0"))+"");
                 BigDecimal pValue = new BigDecimal(arr[rowNo][columnNo] + "");
                 if ((rowNo + columnNo) % 2 == 0)
                 {
@@ -211,7 +211,7 @@ public class MatrixMath {
     {
         T[][] covalentFormulaMatrix = this.getCovalentFormulaMatrix(arr, rowNo, columnNo);
         Double d = mathDeterminant(covalentFormulaMatrix);
-        BigDecimal bigDecimal = new BigDecimal(d);
+        BigDecimal bigDecimal = new BigDecimal(d+"");
         if ((rowNo + columnNo) % 2 == 0)
         {
             return bigDecimal.doubleValue();
@@ -249,18 +249,18 @@ public class MatrixMath {
         {
             Double[][] temp = new Double[2][2];
             temp[0][0] = new BigDecimal(arr[1][1]+"")
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
             temp[0][1] = new BigDecimal(arr[0][1]+"")
                     .multiply(new BigDecimal(-1))
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
             temp[1][0] = new BigDecimal(arr[1][0]+"")
                     .multiply(new BigDecimal(-1))
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
             temp[1][1] = new BigDecimal(arr[0][0]+"")
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
             return temp;
         }
@@ -269,32 +269,32 @@ public class MatrixMath {
             Double[][] acfMatrix = getAlgebraCovalentFormulaMatrix(arr);
             Double[][] matrixTranspose = getMatrixTranspose(acfMatrix);
             Double[][] temp = new Double[3][3];
-            temp[0][0] = new BigDecimal(matrixTranspose[0][0])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[0][0] = new BigDecimal(matrixTranspose[0][0]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[0][1] = new BigDecimal(matrixTranspose[0][1])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[0][1] = new BigDecimal(matrixTranspose[0][1]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[0][2] = new BigDecimal(matrixTranspose[0][2])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[0][2] = new BigDecimal(matrixTranspose[0][2]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[1][0] = new BigDecimal(matrixTranspose[1][0])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[1][0] = new BigDecimal(matrixTranspose[1][0]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[1][1] = new BigDecimal(matrixTranspose[1][1])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[1][1] = new BigDecimal(matrixTranspose[1][1]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[1][2] = new BigDecimal(matrixTranspose[1][2])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[1][2] = new BigDecimal(matrixTranspose[1][2]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[2][0] = new BigDecimal(matrixTranspose[2][0])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[2][0] = new BigDecimal(matrixTranspose[2][0]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[2][1] = new BigDecimal(matrixTranspose[2][1])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[2][1] = new BigDecimal(matrixTranspose[2][1]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
-            temp[2][2] = new BigDecimal(matrixTranspose[2][2])
-                    .divide(new BigDecimal(l), 4, RoundingMode.FLOOR)
+            temp[2][2] = new BigDecimal(matrixTranspose[2][2]+"")
+                    .divide(new BigDecimal(l+""), 4, RoundingMode.FLOOR)
                     .doubleValue();
             return temp;
         }
